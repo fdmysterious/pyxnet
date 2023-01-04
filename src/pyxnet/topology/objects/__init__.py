@@ -7,6 +7,8 @@ Base definition of a network object
 :Date: January 2023
 """
 
+import logging
+
 from abc         import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -19,6 +21,7 @@ class PyxNetObject(ABC):
     def __init__(self, name: str):
         super().__init__()
         self.name = name
+        self.log  = logging.getLogger(name)
 
     def __hash__(self) -> int:
         return str.__hash__(self.name)
@@ -42,18 +45,18 @@ class PyxNetObject(ABC):
 
     # ---------------- Base operations for object
 
-    #@abstractmethod
-    #def instanciate(self):
-    #    pass
+    @abstractmethod
+    def instanciate(self):
+        pass
 
     #@abstractmethod
-    #def remove(self):
-    #    pass
+    def remove(self):
+        pass
 
     #@abstractmethod
-    #def up(self):
-    #    pass
+    def up(self):
+        pass
 
     #@abstractmethod
-    #def down(self):
-    #    pass
+    def down(self):
+        pass
