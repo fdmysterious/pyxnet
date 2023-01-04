@@ -13,6 +13,8 @@ from typing      import List, Tuple, Set, Dict
 from pyxnet.topology.endpoint import Endpoint, Endpoint_Connection
 from pyxnet.topology.objects  import PyxNetObject
 
+import graphviz
+
 @dataclass
 class Topology:
     """
@@ -21,6 +23,7 @@ class Topology:
     and a set of endpoint connections.
     """
 
+    name: str
     objects: Dict[str, PyxNetObject]= field(default_factory=dict)
     links: Set[Endpoint_Connection] = field(default_factory=set)
 
@@ -110,3 +113,25 @@ class Topology:
 
     def __getitem__(self, name: str):
         return self.get(name)
+
+    
+    # --------------- Diagram export
+
+    def export_graphviz(self):
+        dot = graphviz.Graph(
+            name=self.name,
+            engine="circo",
+            graph_attr={"fontname": "sans-serif"},
+            edge_attr={"fontname": "sans-serif", "fontsize": "11"},
+            node_attr={"fontname": "sans-serif"},
+        )
+
+        # Add nodes
+        for key, node in self.objects.items():
+            node.export_graphviz(dot)
+        
+        # Add edges
+        for edge in self.links:
+            dot.edge(edge.a.parent.name, edge.b.parent.name, headlabel=edge.b.name, taillabel=edge.a.name)
+
+        return dot
