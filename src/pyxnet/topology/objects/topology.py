@@ -14,6 +14,7 @@ from pyxnet.topology.endpoint import Endpoint, Endpoint_Connection
 from pyxnet.topology.objects  import PyxNetObject
 
 import graphviz
+import logging
 
 @dataclass
 class Topology:
@@ -26,6 +27,9 @@ class Topology:
     name: str
     objects: Dict[str, PyxNetObject]= field(default_factory=dict)
     links: Set[Endpoint_Connection] = field(default_factory=set)
+
+    def __post_init__(self):
+        self.log = logging.getLogger(f"Topology {self.name}")
 
 
     # --------------- Endpoints managment
@@ -135,3 +139,17 @@ class Topology:
             dot.edge(edge.a.parent.name, edge.b.parent.name, headlabel=edge.b.name, taillabel=edge.a.name)
 
         return dot
+
+
+    # --------------- Instanciation / Cleanup
+
+    def instanciate(self):
+        self.log.info("Instanciate topology")
+
+        # Instanciate links
+        for l in self.links:
+            l.instanciate()
+
+        # Instanciate objects
+        for n, obj in self.objects:
+            obj.instanciate()
