@@ -151,5 +151,5 @@ class Topology:
             l.instanciate()
 
         # Instanciate objects
-        for n, obj in self.objects:
+        for n, obj in self.objects.items():
             obj.instanciate()

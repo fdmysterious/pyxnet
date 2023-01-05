@@ -18,7 +18,7 @@ from enum        import Enum, auto
 from pyxnet.topology.objects import PyxNetObject
 from pyxnet.platform.link    import (Link_Phy, Link_VEth, Link_Pipe)
 
-from pyxnet.platform.tools   import ifp
+from pyxnet.platform.tools   import ifp, sth
 
 
 ############################
@@ -86,7 +86,7 @@ class Endpoint_Connection:
     b: Endpoint
 
     def __post_init__(self):
-        self.log       = logging.getLogger("")
+        self.log       = logging.getLogger(f"{self.a.path} <-> {self.b.path}")
         self.link_obj  = None # Instanciated link object
 
     def __hash__(self) -> int:
@@ -96,7 +96,7 @@ class Endpoint_Connection:
     # --------- Instanciation and interface names
 
     def instanciate(self):
-        self.log("Instanciate connection: {self.a.path} <-> {self.b.path}")
+        self.log.info(f"Instanciate connection: {self.a.path} <-> {self.b.path}")
         # TODO # Manage IP addr and mac addresses for endpoints
 
         # Let's go to the if clause of death!!!!!!!!!!!!!!!!!!
@@ -111,24 +111,24 @@ class Endpoint_Connection:
             if   self.b.kind == Endpoint_Kind.Real:
                 raise RuntimeError("Cannot connect a virtual endpoint to a real one; There must be a Phy interface in-between.")
             elif self.b.kind == Endpoint_Kind.Virtual:
-                self.a.ifname = ifp(self.a.name)
-                self.b.ifname = ifp(self.b.name)
+                self.a._ifname = ifp(f"{sth(self.a.parent.name)}-{sth(self.a.name)}")
+                self.b._ifname = ifp(f"{sth(self.b.parent.name)}-{sth(self.b.name)}")
                 self.link_obj = Link_VEth(self.a.ifname, self.b.ifname)
             elif self.b.kind == Endpoint_Kind.Phy:
-                self.a.ifname = self.b.name # endpoint A is directly linked to phy interface
-                self.b.ifname = self.b.name
+                self.a._ifname = self.b.name # endpoint A is directly linked to phy interface
+                self.b._ifname = self.b.name
                 self.link_obj = Link_Phy(self.b.name)
         elif self.a.kind == Endpoint_Kind.Phy:
             if   self.b.kind == Endpoint_Kind.Real:
                 pass # Nothing to do, outside of the computer
             elif self.b.kind == Endpoint_Kind.Virtual:
-                self.a.ifname = self.a.name
-                self.b.ifname = self.a.name # endpoint B is linked directly to phy interface
+                self.a._ifname = self.a.name
+                self.b._ifname = self.a.name # endpoint B is linked directly to phy interface
                 self.link_obj = Link_Phy(self.a.name)
             elif self.b.kind == Endpoint_Kind.Phy:
-                self.a.ifname = self.b.name
-                self.b.ifname = self.b.name
-                pipe_name = ifp(f"pipe-{self.a.name}-{self.b.name}")
+                self.a._ifname = self.b.name
+                self.b._ifname = self.b.name
+                pipe_name = ifp(f"{sth(self.a.name)}-{sth(self.b.name)}")
                 self.link_obj = Link_Pipe(pipe_name, self.a.ifname, self.b.ifname)
 
         if self.link_obj is not None:

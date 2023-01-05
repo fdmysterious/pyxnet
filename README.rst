@@ -41,5 +41,4 @@ Defining a network topology
 A network topology is defined using the following elements:
 
 - Topology objects
-- Links between objects
-- Ports that attach a link end to an object.
+- Links between objects' endpoints
