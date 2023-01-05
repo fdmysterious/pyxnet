@@ -17,14 +17,17 @@ def asset(x: Path):
     return __assets_dir / x
 
 
-def box_logo_node(dot, node_name, logo_path, text):
+def box_logo_node(dot, node_name, logo_path, text, **kwargs):
     """
     Generates a node with a box shape and some logo
     in it.
     """
 
+    if not "shape" in kwargs:
+        kwargs["shape"] = "box"
+
     dot.node(node_name, label=f"""<
         <TABLE BORDER="0">
             <TR><TD WIDTH="64" HEIGHT="64" FIXEDSIZE="TRUE"><IMG SRC="{logo_path!s}" SCALE="BOTH"/></TD></TR>
             <TR><TD>{text}</TD></TR>
-        </TABLE>>""", shape="box")
+        </TABLE>>""", **kwargs)

@@ -7,6 +7,7 @@ Global topology object definition
 :Date: January 2023
 """
 
+from copy        import copy
 from dataclasses import dataclass, field
 from typing      import List, Tuple, Set, Dict
 
@@ -26,7 +27,8 @@ class Topology:
 
     name: str
     objects: Dict[str, PyxNetObject]= field(default_factory=dict)
-    links: Set[Endpoint_Connection] = field(default_factory=set)
+    links: Set[Endpoint_Connection] = field(default_factory=set )
+    groups: Dict[str, List[str]]    = field(default_factory=dict)
 
     def __post_init__(self):
         self.log = logging.getLogger(f"Topology {self.name}")
@@ -80,7 +82,7 @@ class Topology:
 
     # --------------- Objects managmnet
 
-    def register(self, obj: any):
+    def register(self, obj: any, group: str = None):
         """
         Registers a network object in the topology
 
@@ -89,6 +91,12 @@ class Topology:
 
         if isinstance(obj, PyxNetObject):
             self.objects[obj.name] = obj
+
+            # Add object to group
+            if not group in self.groups:
+                self.groups[group] = list()
+
+            self.groups[group].append(obj.name)
         else:
             raise TypeError(f"{obj} is not a pyxnet network object" )
         return obj
@@ -124,15 +132,22 @@ class Topology:
     def export_graphviz(self):
         dot = graphviz.Graph(
             name=self.name,
-            engine="circo",
-            graph_attr={"fontname": "sans-serif"},
+            engine="dot",
+            graph_attr={"fontname": "sans-serif", "splines": "spline"},
             edge_attr={"fontname": "sans-serif", "fontsize": "11"},
             node_attr={"fontname": "sans-serif"},
+            body=["newrank=true;", "nodesep=1;"]
         )
 
         # Add nodes
-        for key, node in self.objects.items():
-            node.export_graphviz(dot)
+        for group, items in self.groups.items():
+            if group is not None:
+                with dot.subgraph(name=group, body=[f"label={group};", "margin=16;", "rank=same;", "cluster=true;"]) as dotgroup:
+                    for node in items:
+                        self.objects[node].export_graphviz(dotgroup)
+            else:
+                for node in items:
+                    self.objects[node].export_graphviz(dot)
         
         # Add edges
         for edge in self.links:
