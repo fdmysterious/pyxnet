@@ -28,7 +28,7 @@ class Phy(PyxNetObject):
         return self._ifname
 
     def export_graphviz(self, dot):
-        dghelp.box_logo_node(dot, self.name, dghelp.asset("icons/nic-behind.png"), self.name)
+        dghelp.box_logo_node(dot, self.name, dghelp.asset("icons/material/lan.png"), self.name)
 
     def instanciate(self):
         pass

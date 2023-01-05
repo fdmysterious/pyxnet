@@ -1,1 +1,0 @@
-nic-behind.svg: https://openclipart.org/detail/217136/network-card-from-behind
