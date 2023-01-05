@@ -11,7 +11,7 @@ from copy        import copy
 from dataclasses import dataclass, field
 from typing      import List, Tuple, Set, Dict
 
-from pyxnet.topology.endpoint import Endpoint, Endpoint_Connection
+from pyxnet.topology.endpoint import Endpoint, Endpoint_Connection, Endpoint_Kind
 from pyxnet.topology.objects  import PyxNetObject
 
 import graphviz
@@ -151,7 +151,8 @@ class Topology:
         
         # Add edges
         for edge in self.links:
-            dot.edge(edge.a.parent.name, edge.b.parent.name, headlabel=edge.b.name, taillabel=edge.a.name)
+            style = "dashed"  if (edge.a.kind == Endpoint_Kind.Real) or (edge.b.kind == Endpoint_Kind.Real) else "solid"
+            dot.edge(edge.a.parent.name, edge.b.parent.name, headlabel=edge.b.name, taillabel=edge.a.name, style=style)
 
         return dot
 
