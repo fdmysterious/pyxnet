@@ -100,12 +100,19 @@ class Link_Phy(Link):
 
     def instanciate(self):
         self.log.info(f"Configure {self.name} physical link")
-        if (self.mac_addr is not None) or (self.ip_addr is not None):
+        if (self.mac_addr is not None):
             self.log.info(f"> Set {self.name} MAC addr to {self.mac_addr}")
 
             with NDB() as ndb:
                 ndb.interfaces[self.name].set("state", "down").commit()
                 ndb.interfaces[self.name].set("address", self.mac_addr).commit()
+        
+        if (self.ip_addr is not None):
+            self.log.info(f"> Set {self.name} IP address to {self.ip_addr}")
+            
+            with NDB() as ndb:
+                ndb.interfaces[self.name].add_ip(self.ip_addr).commit()
+
     
     def remove(self):
         pass
@@ -130,7 +137,7 @@ class Link_Pipe(Link):
         to link to physical ports together.
     """
 
-    def __init__(self, name, p0_name, p1_name):
+    def __init__(self, name, p0_name, p1_name, p0_mac=None, p1_mac=None, p0_ip=None, p1_ip=None):
         super().__init__()
 
         self.name           = name
@@ -138,6 +145,12 @@ class Link_Pipe(Link):
 
         self.p0_name        = p0_name
         self.p1_name        = p1_name
+
+        self.p0_mac         = p0_mac
+        self.p1_mac         = p1_mac
+
+        self.p0_ip          = p0_ip
+        self.p1_ip          = p1_ip
 
     ###########################
 
@@ -152,7 +165,25 @@ class Link_Pipe(Link):
         ovs.dpctl("add-flow", self.name, "in_port(1),eth()", "2")
         ovs.dpctl("add-flow", self.name, "in_port(2),eth()", "1")
 
-        self.log.debug(ovs.dpctl("dump-dps").stdout)
+        # Configure mac and IP addr
+        if self.p0_mac is not None:
+            self.log.debug(f"> Configure port0 mac to {self.p0_mac}")
+            with NDB() as ndb:
+                ndb.interfaces[self.p0_name].set("state", "down").commit()
+                ndb.interfaces[self.p0_name].set("address", self.p0_mac).commit()
+        if self.p1_mac is not None:
+            self.log.debug(f"> Configure port1 mac to {self.p1_mac}")
+            with NDB() as ndb:
+                ndb.interfaces[self.p1_name].set("state", "down").commit()
+                ndb.interfaces[self.p1_name].set("address", self.p1_mac).commit()
+        if self.p0_ip is not None:
+            self.log.debug(f"> Configure port0 IP to {self.p0_ip}")
+            with NDB() as ndb:
+                ndb.interfaces[self.p0_name].add_ip(self.p0_ip).commit()
+        if self.p1_ip is not None:
+            self.log.debug(f"> Configure port0 IP to {self.p1_ip}")
+            with NDB() as ndb:
+                ndb.interfaces[self.p1_name].add_ip(self.p1_ip).commit()
 
     def remove(self):
         self.log.info("Remove bypass")

@@ -41,11 +41,12 @@ class Endpoint_Kind(Enum):
 
 class Endpoint:
     def __init__(self, name: str, kind: Endpoint_Kind, parent: "PyxNetObject"):
-        self.name   = name
-        self.kind   = kind
-        self.parent = parent
+        self.name       = name
+        self.kind       = kind
+        self.parent     = parent
 
-        self._ifname = None # Attached interface name from Endpoint_Connection
+        self._ifname    = None   # Attached interface name from Endpoint_Connection
+        self.properties = dict() # Auxiliary properties
 
     @property
     def path(self):
@@ -94,9 +95,41 @@ class Endpoint_Connection:
 
     # --------- Instanciation and interface names
 
+    def _instanciate_veth(self):
+        self.a._ifname = ifp(f"{sth(self.a.parent.name)}-{sth(self.a.name)}")
+        self.b._ifname = ifp(f"{sth(self.b.parent.name)}-{sth(self.b.name)}")
+
+        # Look for MAC and IP address
+        a_mac = self.a.properties.get("mac_addr", None)
+        a_ip  = self.a.properties.get("ip_addr" , None)
+        b_mac = self.b.properties.get("mac_addr", None)
+        b_ip  = self.b.properties.get("ip_addr" , None)
+
+        self.link_obj  = Link_VEth(
+            self.a.ifname, self.b.ifname,
+            p0_mac = a_mac, p1_mac = b_mac,
+            p0_ip  = a_ip , p1_ip  = b_ip
+        )
+
+    def _instanciate_phy(self, ep_phy, ep_virtual):
+        ep_virtual._ifname = ep_phy.name # Virtual EP is directly linked to phy
+        ep_phy._ifname     = ep_phy.name
+
+        # Take properties from virtual endpoint
+        phy_mac            = ep_virtual.properties.get("mac_addr", None)
+        phy_ip             = ep_virtual.properties.get("ip_addr" , None)
+
+        self.link_obj      = Link_Phy(ep_phy.name, mac_addr=phy_mac, ip_addr=phy_ip)
+
+    def _instanciate_pipe(self):
+        self.a._ifname = self.b.name
+        self.b._ifname = self.b.name
+        pipe_name = ifp(f"{sth(self.a.name)}-{sth(self.b.name)}")
+        self.link_obj = Link_Pipe(pipe_name, self.a.ifname, self.b.ifname)
+
+
     def instanciate(self):
         self.log.info(f"Instanciate connection: {self.a.path} <-> {self.b.path}")
-        # TODO # Manage IP addr and mac addresses for endpoints
 
         # Let's go to the if clause of death!!!!!!!!!!!!!!!!!!
         if   self.a.kind == Endpoint_Kind.Real:
@@ -110,25 +143,16 @@ class Endpoint_Connection:
             if   self.b.kind == Endpoint_Kind.Real:
                 raise RuntimeError("Cannot connect a virtual endpoint to a real one; There must be a Phy interface in-between.")
             elif self.b.kind == Endpoint_Kind.Virtual:
-                self.a._ifname = ifp(f"{sth(self.a.parent.name)}-{sth(self.a.name)}")
-                self.b._ifname = ifp(f"{sth(self.b.parent.name)}-{sth(self.b.name)}")
-                self.link_obj = Link_VEth(self.a.ifname, self.b.ifname)
+                self._instanciate_veth()
             elif self.b.kind == Endpoint_Kind.Phy:
-                self.a._ifname = self.b.name # endpoint A is directly linked to phy interface
-                self.b._ifname = self.b.name
-                self.link_obj = Link_Phy(self.b.name)
+                self._instanciate_phy(self.b, self.a)
         elif self.a.kind == Endpoint_Kind.Phy:
             if   self.b.kind == Endpoint_Kind.Real:
                 pass # Nothing to do, outside of the computer
             elif self.b.kind == Endpoint_Kind.Virtual:
-                self.a._ifname = self.a.name
-                self.b._ifname = self.a.name # endpoint B is linked directly to phy interface
-                self.link_obj = Link_Phy(self.a.name)
+                self._instanciate_phy(self.a, self.b)
             elif self.b.kind == Endpoint_Kind.Phy:
-                self.a._ifname = self.b.name
-                self.b._ifname = self.b.name
-                pipe_name = ifp(f"{sth(self.a.name)}-{sth(self.b.name)}")
-                self.link_obj = Link_Pipe(pipe_name, self.a.ifname, self.b.ifname)
+                self._instanciate_pipe()
 
         if self.link_obj is not None:
             self.link_obj.instanciate()
