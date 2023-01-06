@@ -99,13 +99,16 @@ class Link_Phy(Link):
         self.ip_addr  = ip_addr
 
     def instanciate(self):
-        self.log.info("Configure {self.name} physical link")
+        self.log.info(f"Configure {self.name} physical link")
         if (self.mac_addr is not None) or (self.ip_addr is not None):
             self.log.info(f"> Set {self.name} MAC addr to {self.mac_addr}")
 
             with NDB() as ndb:
                 ndb.interfaces[self.name].set("state", "down").commit()
                 ndb.interfaces[self.name].set("address", self.mac_addr).commit()
+    
+    def remove(self):
+        pass
 
 
 ##########################################

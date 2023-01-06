@@ -62,7 +62,6 @@ class Switch(PyxNetObject):
         self.mac_addr   = mac_addr
         self.ip_addr    = ip_addr
 
-        self.ports      = set()
         self.stp_config = stp_config
 
 
@@ -101,18 +100,19 @@ class Switch(PyxNetObject):
 
         # Add ports
         self.log.debug("-> Add ports to bridge")
-        for p in self.ports:
+        for p in self.endpoints:
             ovs.vsctl("add-port", self.ifname, p.ifname)
 
 
     # ------------- Port managment
 
-    def _port_register(self, port: Endpoint):
+    def _endpoint_register(self, endp: Endpoint):
         # Check endpoint's kind
-        if port.kind not in (Endpoint_Kind.Virtual, Endpoint_Kind.Phy):
-            raise ValueError(f"Cannot register endpoint {port} of kind {port.kind} for virtual switch {self.name}")
+        if endp.kind not in (Endpoint_Kind.Virtual, Endpoint_Kind.Phy):
+            raise ValueError(f"Cannot register endpoint {endp} of kind {endp.kind} for virtual switch {self.name}")
 
-        self.ports.add(port)
+        return super()._endpoint_register(endp)
+
 
     
     # ------------- Various properties

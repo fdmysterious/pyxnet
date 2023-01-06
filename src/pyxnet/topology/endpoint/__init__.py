@@ -15,7 +15,6 @@ from abc         import ABC, abstractmethod
 
 from enum        import Enum, auto
 
-from pyxnet.topology.objects import PyxNetObject
 from pyxnet.platform.link    import (Link_Phy, Link_VEth, Link_Pipe)
 
 from pyxnet.platform.tools   import ifp, sth
@@ -41,7 +40,7 @@ class Endpoint_Kind(Enum):
 ############################
 
 class Endpoint:
-    def __init__(self, name: str, kind: Endpoint_Kind, parent: PyxNetObject):
+    def __init__(self, name: str, kind: Endpoint_Kind, parent: "PyxNetObject"):
         self.name   = name
         self.kind   = kind
         self.parent = parent
@@ -134,7 +133,8 @@ class Endpoint_Connection:
         if self.link_obj is not None:
             self.link_obj.instanciate()
         else:
-            raise RuntimeError("No link instanciated...")
+            self.log.info("No virtual link instanciated")
+            
 
     
     def remove(self):

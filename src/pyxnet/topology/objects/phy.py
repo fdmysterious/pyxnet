@@ -32,3 +32,6 @@ class Phy(PyxNetObject):
 
     def instanciate(self):
         pass
+    
+    def remove(self):
+        pass
