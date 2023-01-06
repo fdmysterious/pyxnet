@@ -106,12 +106,12 @@ class Switch(PyxNetObject):
 
     # ------------- Port managment
 
-    def _endpoint_register(self, endp: Endpoint):
+    def _endpoint_register(self, name: str, kind: Endpoint_Kind):
         # Check endpoint's kind
-        if endp.kind not in (Endpoint_Kind.Virtual, Endpoint_Kind.Phy):
+        if kind not in (Endpoint_Kind.Virtual, Endpoint_Kind.Phy):
             raise ValueError(f"Cannot register endpoint {endp} of kind {endp.kind} for virtual switch {self.name}")
 
-        return super()._endpoint_register(endp)
+        return super()._endpoint_register(name, kind)
 
 
     

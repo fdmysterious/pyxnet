@@ -12,7 +12,7 @@ import logging
 from abc                      import ABC, abstractmethod
 from dataclasses              import dataclass
 
-from pyxnet.topology.endpoint import Endpoint
+from pyxnet.topology.endpoint import Endpoint, Endpoint_Kind
 
 
 ##################################
@@ -71,6 +71,7 @@ class PyxNetObject(ABC):
 
     # ---------------- Endpoint registration
 
-    def _endpoint_register(self, endp: Endpoint):
+    def _endpoint_register(self, name: str, kind: Endpoint_Kind):
+        endp = Endpoint(name, kind, parent=self)
         self.endpoints.add(endp)
         return endp
