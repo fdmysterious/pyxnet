@@ -136,7 +136,7 @@ class Topology:
             graph_attr={"fontname": "sans-serif", "splines": "spline"},
             edge_attr={"fontname": "sans-serif", "fontsize": "11"},
             node_attr={"fontname": "sans-serif"},
-            body=["newrank=true;", "nodesep=1;"]
+            body=["newrank=true;", "nodesep=1;", f'label="{self.name}"']
         )
 
         # Add nodes
