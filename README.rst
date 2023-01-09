@@ -19,6 +19,9 @@ use of the `iproute2` linux utility suite, and `openvswitch`_.
 .. _`mininet`: http://mininet.org
 .. _`openvswitch`: https://www.openvswitch.org/
 
+This library allows to create virtual network topologies, for instance assign specific MAC or IP addresses,
+and instanciate this topology on a linux host, or generate a diagram of this toplogy using `graphviz`.
+
 
 Dependencies
 ============
