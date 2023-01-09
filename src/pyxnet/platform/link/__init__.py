@@ -111,7 +111,11 @@ class Link_Phy(Link):
             self.log.info(f"> Set {self.name} IP address to {self.ip_addr}")
             
             with NDB() as ndb:
-                ndb.interfaces[self.name].add_ip(self.ip_addr).commit()
+                itf = ndb.interfaces[self.name]
+                if self.ip_addr in itf.ipaddr:
+                    self.log.warn(f"IP address {self.ip_addr} already registered for interface")
+                else:
+                    ndb.interfaces[self.name].add_ip(self.ip_addr).commit()
 
     
     def remove(self):
