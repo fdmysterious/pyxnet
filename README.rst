@@ -22,6 +22,15 @@ use of the `iproute2` linux utility suite, and `openvswitch`_.
 This library allows to create virtual network topologies, for instance assign specific MAC or IP addresses,
 and instanciate this topology on a linux host, or generate a diagram of this toplogy using `graphviz`.
 
+Installation
+============
+
+You can install this package via :code:`pip`:
+
+.. code:: bash
+
+  pip install git+https://github.com/fdmysterious/pyxnet
+
 
 Dependencies
 ============
