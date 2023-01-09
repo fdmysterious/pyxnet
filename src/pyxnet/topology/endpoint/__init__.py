@@ -15,8 +15,9 @@ from abc         import ABC, abstractmethod
 
 from enum        import Enum, auto
 
-from pyxnet.platform.link    import (Link_Phy, Link_VEth, Link_Pipe)
+from pyroute2 import NDB
 
+from pyxnet.platform.link    import (Link_Phy, Link_VEth, Link_Pipe)
 from pyxnet.platform.tools   import ifp, sth
 
 
@@ -41,6 +42,7 @@ class Endpoint_Kind(Enum):
 
 class Endpoint:
     def __init__(self, name: str, kind: Endpoint_Kind, parent: "PyxNetObject"):
+        self.log        = logging.getLogger(f"Endpoint {name}")
         self.name       = name
         self.kind       = kind
         self.parent     = parent
@@ -74,6 +76,27 @@ class Endpoint:
 
     def __repr__(self):
         return f"Endpoint(path={self.path}, kind={self.kind.value})"
+
+    ####################
+
+    def up(self):
+        self.log.info("Up endpoint")
+
+        if self.kind != Endpoint_Kind.Real:
+            with NDB() as ndb:
+                ndb.interfaces[self.ifname].set("state", "up").commit()
+        else:
+            self.log.warn("Real endpoint, assuming correct action on target")
+
+
+    def down(self):
+        self.log.info("Down endpoint")
+
+        if self.kind != Endpoint_Kind.Real:
+            with NDB() as ndb:
+                ndb.interfaces[self.ifname].set("state", "down").commit()
+        else:
+            self.log.warn("Real endpoint, assuming correct action on target")
 
 
 ############################

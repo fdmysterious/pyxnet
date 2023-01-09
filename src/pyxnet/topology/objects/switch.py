@@ -114,6 +114,29 @@ class Switch(PyxNetObject):
         return super()._endpoint_register(name, kind)
 
 
+    # ------------- Up/Down
+
+    def up(self):
+        # Up switch
+        self.log.info("Up switch")
+
+        with NDB() as ndb:
+            ndb.interfaces[self.ifname].set("state", "up").commit()
+        
+        # Up ports
+        for ep in self.endpoints:
+            ep.up()
+
+    def down(self):
+        # Down switch
+        self.log.info("Down switch")
+        with NDB() as ndb:
+            ndb.interfaces[self.ifname].set("state", "down").commit()
+
+        # Down ports
+        for ep in self.endpoints:
+            ep.down()
+
     
     # ------------- Various properties
 
