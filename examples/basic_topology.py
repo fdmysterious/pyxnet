@@ -9,6 +9,8 @@ Basic pyxnet topology example
 This example illustrates basic usage of the pyxnet topology declaration and instanciation
 """
 
+import logging
+
 from pyxnet.topology.objects.topology import Topology
 from pyxnet.topology.objects.switch   import Switch
 
@@ -47,6 +49,8 @@ class MyCustomSwitch(Switch):
         dghelpers.box_logo_node(dot, self.name, dghelpers.asset("icons/material/router.png"), f"Switch {self.name}")
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     # First, declare a topology object. This object will holds all objects declaration,
     # as well as links between these objects.
     tt = Topology(name="Basic topology")
