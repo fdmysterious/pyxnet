@@ -78,7 +78,7 @@ class Switch(PyxNetObject):
         self.log.debug("-> Set MAC address?")
         if self.mac_addr is not None:
             self.log.info(f"Set bridge MAC address to {self.mac_addr}")
-            ovs.vsctl("set", "Bridge", self.name, f"other_config:rstp-address={self.mac_addr}")
+            ovs.vsctl("set", "Bridge", self.ifname, f"other_config:rstp-address={self.mac_addr}")
 
         self.log.debug("-> Set IP Address?")
         if self.ip_addr is not None:
