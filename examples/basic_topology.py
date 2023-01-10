@@ -32,13 +32,26 @@ class MyCustomSwitch(Switch):
             ip_addr    = ip_addr,  # Not mandatory
 
             stp_config = {
-                "rstp_enabled": True, # Enable RSTP!
+                "rstp_enabled": True,     # Enable RSTP!
+                "bridge_priority": 0x8000 # Set bridge priority
             }
         )
 
         # Init endpoints
         self.p0 = self._endpoint_register("p0", Endpoint_Kind.Virtual)
         self.p1 = self._endpoint_register("p1", Endpoint_Kind.Virtual)
+
+        # Set endpoint RSTP properties
+        self.p0.properties["stp_config"] = {
+            "path_cost": 100,
+            "priority":  0x8000,
+        }
+
+        self.p1.properties["stp_config"] = {
+            "path_cost": 100,
+            "priority": 0x8000,
+        }
+
 
     def export_graphviz(self, dot):
         """

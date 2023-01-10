@@ -14,6 +14,7 @@ from pyxnet.platform.tools    import ovs, ifp, sth
 from pyroute2                 import NDB
 
 from dataclasses              import dataclass
+from typing                   import Optional
 
 ##############################
 # Switch RSTP/STP config class
@@ -36,6 +37,15 @@ class Switch_Config_STP:
 
     ## TODO # Per port config for RSTP
     # port_priority, port_num, path_cost, admin_edge, auto_edge, port_admin_state
+
+@dataclass
+class Switch_Endpoint_Config_STP:
+    path_cost: int                   = 0
+    priority: int                    = 0x8000
+    num: Optional[int]               = None # None -> Not defined
+    admin_edge: bool                 = True
+    auto_edge: bool                  = False
+    admin_port_state: Optional[bool] = False
 
 
 class Switch(PyxNetObject):
@@ -102,6 +112,27 @@ class Switch(PyxNetObject):
         self.log.debug("-> Add ports to bridge")
         for p in self.endpoints:
             ovs.vsctl("add-port", self.ifname, p.ifname)
+
+            # Configure RSTP properties
+            if "stp_config" in p.properties:
+                if isinstance(p.properties["stp_config"], Switch_Endpoint_Config_STP):
+                    ep_stp_config = p.Properties["stp_config"]
+                else:
+                    ep_stp_config = Switch_Endpoint_Config_STP(**p.properties["stp_config"])
+
+                # Mandatory properties
+                ovs.vsctl("set", "Port", p.ifname, f"other_config:stp-path-cost={ep_stp_config.path_cost}")
+                ovs.vsctl("set", "Port", p.ifname, f"other_config:rstp-path-cost={ep_stp_config.path_cost}")
+                ovs.vsctl("set", "Port", p.ifname, f"other_config:rstp-port-priority={ep_stp_config.priority>>8}")
+                ovs.vsctl("set", "Port", p.ifname, f"other_config:rstp-port-admin-edge={_boolt[ep_stp_config.admin_edge]}")
+                ovs.vsctl("set", "Port", p.ifname, f"other_config:rstp-port-auto-edge={_boolt[ep_stp_config.auto_edge]}")
+                
+                # Optional properties
+                if ep_stp_config.num is not None:
+                    ovs.vsctl("set", "Port", p.ifname, f"other_config:rstp-port-num={ep_stp_config.num}")
+
+                if ep_stp_config.admin_port_state is not None:
+                    ovs.vsctl("set", "Port", p.ifname, f"other_config:admin_port_state={_boolt[ep_stp_config.admin_port_state]}")
 
 
     # ------------- Port managment
