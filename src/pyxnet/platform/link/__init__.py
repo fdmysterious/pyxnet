@@ -159,7 +159,7 @@ class Link_Pipe(Link):
     ###########################
 
     def instanciate(self):
-        self.log.info("Configure pipe")
+        self.log.info(f"Configure pipe {self.name} {self.p0_name} {self.p1_name}")
         ovs.dpctl("add-dp", self.name)
         ovs.dpctl("add-if", self.name, self.p0_name)
         ovs.dpctl("add-if", self.name, self.p1_name)

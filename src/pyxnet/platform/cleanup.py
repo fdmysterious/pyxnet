@@ -28,7 +28,8 @@ def cleanup_dpctl():
     deleted = 0
     for switch in switches :
         s = switch.split("@")
-        if s != [""] and not s[1].startswith(ifp()):
+        # If the split works and the name of the datapath start with the prefix pxn
+        if s != [""] and s[1].startswith(ifp()):
             __cleanup_log.debug(f"Removing {s[1]} dp")
             ovs.dpctl("del-dp", s[1])
             deleted += 1

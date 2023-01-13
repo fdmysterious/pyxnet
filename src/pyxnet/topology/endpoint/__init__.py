@@ -145,7 +145,7 @@ class Endpoint_Connection:
         self.link_obj      = Link_Phy(ep_phy.name, mac_addr=phy_mac, ip_addr=phy_ip)
 
     def _instanciate_pipe(self):
-        self.a._ifname = self.b.name
+        self.a._ifname = self.a.name
         self.b._ifname = self.b.name
         pipe_name = ifp(f"{sth(self.a.name)}-{sth(self.b.name)}")
         self.link_obj = Link_Pipe(pipe_name, self.a.ifname, self.b.ifname)
