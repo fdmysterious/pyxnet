@@ -59,6 +59,7 @@ This library depends on the following elements:
 - iproute interface is made using the `pyroute2`_ library.
 - `graphviz`_ allows graph generation
 
+.. _`openvswitch`: https://www.openvswitch.org/
 .. _`pyroute2`: https://pyroute2.org/
 .. _`graphviz`: https://github.com/xflr6/graphviz
 
