@@ -5,14 +5,11 @@ Pyxnet: SDN testing library
 :Authors: - Florian Dupeyron <florian.dupeyron@mugcat.fr>
 :Date: December 2022
 
-:Abstract: `pyxnet` is a python library targetted at network testing, especially for
-           external, embedded devices.
-
 
 Introduction
 ============
 
-`Pyxnet` is a python (py) library targetted at creating virtual networks (net) using SDN[#]_ technology. The `x` in the
+`Pyxnet` is a python (py) library targetted at creating virtual networks (net) using SDN [#]_ technology. The `x` in the
 name is for the crossover thing.
 Its main application is for testing software behaviour in a given environment, or external devices
 like embedded devices. This tool is structured in such a way that it is simple to integrate in
@@ -20,7 +17,8 @@ automated test environments, and that created network topologies are easy to exp
 documentation.
 
 .. figure:: docs/img/pyxnet_goals.png
-
+  :align: center
+  
   Pyxnet goals
 
 
@@ -79,7 +77,8 @@ A network topology is defined using the following elements:
 For instance, Let's take the following topology:
 
 .. figure:: docs/img/example_topology.png
-  :scale: 50
+  :align: center
+  :scale: 50 %
 
   Example topology
 
