@@ -155,6 +155,7 @@ Defining a custom object
 Defining a custom object is straightforward, as it is class based. Here is an example of how to define a custom switch with two ports:
 
 .. code:: python
+
   class MyCustomSwitch(Switch):
       """
       This class illustrates how a custom network object can be created
