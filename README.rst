@@ -196,7 +196,7 @@ Defining a custom object is straightforward, as it is class based. Here is an ex
           the diagram generated object
           """
 
-        dghelpers.box_logo_node(dot, self.name, dghelpers.asset("icons/material/router.png"), f"Switch {self.name}")
+          dghelpers.box_logo_node(dot, self.name, dghelpers.asset("icons/material/router.png"), f"Switch {self.name}")
 
 
 What we can see here, is that the important elements are:
