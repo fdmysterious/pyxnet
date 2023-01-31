@@ -81,7 +81,7 @@ For instance, Let's take the following topology:
   :align: center
   :scale: 50 %
 
-  Example topology
+  Example topology (:code:`examples/basic_topology.py`)
 
 Toplogy objects are the four switches :code:`s1`, :code:`s2`, :code:`s3` and :code:`s4`, each switch have two endpoints
 :code:`p0` and :code:`p1`, and links are symbolized by the lines on the graph.
@@ -142,11 +142,22 @@ are linked together. This corresponds for instance to a switch's port. Each endp
 This type definition imples the following statements:
 
 - All the network topology can be defined, virtual and real objects;
-- A virtual endpoint cannot be linked directly to a real endpoint. **There must be** a phy interface in between.
+- A virtual endpoint cannot be linked directly to a real endpoint. **There must be** a phy interface in-between.
+
+.. figure:: docs/img/real_objects.png
+   :align: center
+   :scale: 50%
+
+   Real and virtual objects (:code:`examples/real_objects.py`)
+
 
 As defined, the user doesn't have to worry about implementation details, and what object neeeds to be defined or not,
 wether it have to be instanciated in the linux machine or not. This also makes the generated graph exhaustive about
 the tested topology.
+
+On the above figure, we can see that links existing in the virtual world are solid lines, whereas links in the real world
+are represented using dashed lines. This means that when instanciating, real links have no real effect on what's happening
+inside the linux host.
 
 
 Defining a custom object
